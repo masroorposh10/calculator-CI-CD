@@ -1,3 +1,5 @@
 name: sometest
-description:
-        'Hello'
+somethingelse:
+      runs on:
+        ubuntu
+        
