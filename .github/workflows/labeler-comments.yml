@@ -1,0 +1,28 @@
+name: "Pull Request Commenter"
+
+on:
+  pull_request:
+    types: [ labeled ]
+
+jobs:
+  breaking-changes:
+    if: ${{ github.event.label.name == 'BREAKING CHANGES' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/github-script@v6
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |  
+          const message = `
+            :fire: It looks like this PR contains **BREAKING CHANGES** to API docs, HTTP Clients or contracts.
+            
+
+            If you are unsure of any of these steps, please ask for guidance in the.
+          `
+
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: message
+          })
