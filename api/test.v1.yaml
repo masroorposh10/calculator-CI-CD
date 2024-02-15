@@ -2,9 +2,4 @@ name: sometest
 somethingelse:
       runs on:
         ubuntu
-more:
-  hello
-something:
-  givememore
-  else:
-    'hello'
+        
