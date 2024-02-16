@@ -6,3 +6,5 @@ more:
   hello
 something:
   givememore
+  else:
+    'hello'
