@@ -1,3 +1,5 @@
 # Add 'BREAKING CHANGES' label for API docs
 BREAKING CHANGES:
-- api/*.yaml
+- changed-files:
+  - any-glob-to-any-file:
+    - apis/*.yaml
