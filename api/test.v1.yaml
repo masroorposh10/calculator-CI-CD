@@ -9,3 +9,6 @@ something:
   else:
     'hello'
   givememore
+
+api:
+  myapi
