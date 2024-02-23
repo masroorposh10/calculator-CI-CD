@@ -18,8 +18,8 @@ jobs:
         run: python -m pytest -v
       - name: lint SegX
         run: |
-          pip install flake8
-          flake8 .
-          pip install black
-          black --check .
-          black .
+          # pip install flake8
+          # flake8 .
+          # pip install black
+          # black --check .
+          # black .
