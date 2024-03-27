@@ -48,5 +48,10 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git diff --exit-code && echo "No formatting changes to commit." || (git commit -am "Format code" && git push)
-      env: 
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Commit changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git diff --exit-code && exit
+        git commit -am "Fix formatting"
+        git push
