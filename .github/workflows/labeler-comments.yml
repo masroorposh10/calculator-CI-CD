@@ -9,20 +9,16 @@ jobs:
     if: ${{ github.event.label.name == 'BREAKING CHANGES' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/github-script@v6
+    - uses: actions/github-script@v7
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |  
           const message = `
-            :fire: It looks like this PR contains **BREAKING CHANGES** to API docs.
+            :fire: It looks like this PR contains **BREAKING CHANGES** to API docs, HTTP Clients or contracts.
             
             Please ensure that you have:
-            - Reviewed the [breaking change guidelines](https://symend.atlassian.net/wiki/spaces/SN/pages/2320793672/Breaking+Change+Guidelines).
             - Planned these changes with all affected parties ahead of time.
             - Reviewed these changes with the front-end team.
-            - Provided backwards compatibility features, or implemented the changes as new endpoints.
-
-            If you are unsure of any of these steps, please ask for guidance in the #team-model-centric-services.
           `
 
           github.rest.issues.createComment({
