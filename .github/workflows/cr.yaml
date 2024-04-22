@@ -1,14 +1,7 @@
 name: AI Code Reviewer
 
-trigger:
-  branches:
-    exclude:
-      - '*'
-
-pr:
-  branches:
-    include:
-      - '*'
+on:
+    pull_request
 
 jobs:
 - job: CodeReview
