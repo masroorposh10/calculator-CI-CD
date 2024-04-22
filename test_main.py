@@ -10,7 +10,6 @@ def test_substract():
     res = subtract(10, 5)
     assert res == 5
 
-
 def test_multiply():
     res = multiply(5, 5)
     assert res == 25
