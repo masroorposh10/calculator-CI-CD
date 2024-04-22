@@ -1,21 +1,22 @@
 name: AI Code Reviewer
 
 on:
-    pull_request
-
+  pull_request:
+    types:
+      - opened
+      - synchronize
+permissions: write-all
 jobs:
-- job: CodeReview
-  pool:
-    vmImage: 'ubuntu-latest'
-  steps:
-  - task: OpenAICodeReviewTask@1
-    inputs:
-      api_key: ${{secrets.OPENAI_API_KEY}}
-      ai_model: 'gpt-3.5-turbo'
-      bugs: true
-      performance: true
-      best_practices: true
-      file_extensions: 'js,ts,css,html'
-      file_excludes: 'file1.js,file2.py,secret.txt'
-      additional_prompts: 'Fix variable naming, Ensure consistent indentation, Review error handling approach'`
-
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        
+      - name: AI Code Review Action
+        uses: freeedcom/ai-codereviewer@v2.7.0
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # The GITHUB_TOKEN is there by default so you just need to keep it like it is and not necessarily need to add it as secret as it will throw an error. [More Details](https://docs.github.com/en/actions/security-guides/automatic-token-authentication#about-the-github_token-secret)
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_MODEL: "gpt-4" # Optional: defaults to "gpt-4"
+          exclude: "**/*.json, **/*.md" # Optional: exclude patterns separated by commas
