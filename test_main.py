@@ -20,3 +20,4 @@ def test_divide():
     assert res == 8
 
 a = hello
+b = hello2
