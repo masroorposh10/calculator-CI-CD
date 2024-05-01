@@ -13,3 +13,5 @@ def multiply(a, b):
 def find_remainder(a,b):
     return a/b
 
+def sayhello():
+    return "bye"
