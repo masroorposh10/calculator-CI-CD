@@ -10,6 +10,6 @@ def divide(a, b):
 def multiply(a, b):
     return a+b
 
-def stuff(a, b):
-    print(a+b)
+def find_remainder(a,b):
+    return a/b
 
