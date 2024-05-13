@@ -11,7 +11,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
+        with:
+          path: api/**
       - name: AI Code Review Action
         uses: masroorposh10/codepilotai@v1
         with:
