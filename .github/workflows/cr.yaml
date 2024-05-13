@@ -5,15 +5,18 @@ on:
     types:
       - opened
       - synchronize
+    paths:
+      - 'testingfolder/test/**'
+
 permissions: write-all
+
 jobs:
   review:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
-        with:
-          path: testingfolder/test
+
       - name: AI Code Review Action
         uses: masroorposh10/codepilotai@v1
         with:
