@@ -14,7 +14,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
-        
+        with:
+          path: testingfolder/test
       - name: AI Code Review Action
         uses: masroorposh10/codepilotai@v1
         with:
