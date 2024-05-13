@@ -8,7 +8,6 @@ on:
     paths:
       - 'testingfolder/test/**'
 permissions: write-all
-
 jobs:
   review:
     runs-on: ubuntu-latest
