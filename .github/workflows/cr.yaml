@@ -5,8 +5,6 @@ on:
     types:
       - opened
       - synchronize
-    paths:
-      - 'testingfolder/test/**'
 permissions: write-all
 jobs:
   review:
