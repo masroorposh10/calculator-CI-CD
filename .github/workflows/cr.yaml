@@ -1,24 +1,21 @@
-name: AI Code Reviewer
-
+name: CodePilotAI
 on:
   pull_request:
     types:
       - opened
       - synchronize
-    paths:
-      - 'testingfolder/test/**'
 permissions: write-all
 jobs:
-  review:
+  code_review:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repo
+      - name: Checkout repository
         uses: actions/checkout@v3
-        
-      - name: AI Code Review Action
+      - name: Code Review
         uses: masroorposh10/codepilotai@v1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_API_ENDPOINT: ${{secrets.AZURE_OPENAI_API_ENDPOINT}}
           AZURE_OPENAI_API_MODEL: "gpt-4-v0613"
+          exclude: "yarn.lock,dist/**"
