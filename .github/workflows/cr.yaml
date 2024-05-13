@@ -1,5 +1,4 @@
-name: AI Code Reviewer
-
+name: CodePilotAI
 on:
   pull_request:
     types:
@@ -7,10 +6,10 @@ on:
       - synchronize
 permissions: write-all
 jobs:
-  review:
+  code_review:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: AI Code Review Action
