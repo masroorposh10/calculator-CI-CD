@@ -4,7 +4,11 @@ on:
     types:
       - opened
       - synchronize
+    paths:
+      - 'sources/segx/**'
+
 permissions: write-all
+
 jobs:
   code_review:
     runs-on: ubuntu-latest
