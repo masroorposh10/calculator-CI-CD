@@ -19,4 +19,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_API_ENDPOINT: ${{secrets.AZURE_OPENAI_API_ENDPOINT}}
-          AZURE_OPENAI_API_MODEL: "gpt-4-v0613"
+          AZURE_OPENAI_API_MODEL: "gpt-4-turbo-v0613"
