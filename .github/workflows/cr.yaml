@@ -18,7 +18,7 @@ jobs:
         with:
           path: api/**
       - name: AI Code Review Action
-        uses: masroorposh10/codepilotai@v1
+        uses: masroorposh10/codepilotai@logger
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
