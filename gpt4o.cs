@@ -31,6 +31,8 @@ class MathOperations
         return a * b;
     }
 
+    
+
     public int Divide(int a, int b)
     {
         if (b == 0)
