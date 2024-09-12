@@ -9,3 +9,6 @@ def divide(a, b):
 
 def multiply(a, b):
     return a*b
+
+def remainder(a,b):
+    return a%b
