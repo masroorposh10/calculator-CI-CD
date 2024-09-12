@@ -1,0 +1,16 @@
+# Add 'repo' label to any root file changes
+repo:
+  - '*'
+  - .github/*
+  - .github/**/*
+  - init/*
+  - init/**/*
+  - internals/*
+  - internals/**/*
+
+docs:
+  - docs/*
+  - docs/**/*
+  - .*/README.*
+  - .*/**/README.*
+
