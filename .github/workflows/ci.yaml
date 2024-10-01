@@ -14,9 +14,6 @@ jobs:
       - name: install dependencies
         run: pip install pytest
 
-      - name: install package
-        run: pip install dotenv
-      
       - name: test
         run: echo "Running tests..."
         env:
