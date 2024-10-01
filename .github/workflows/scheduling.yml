@@ -1,0 +1,56 @@
+name: Run Python script every 10 mins
+
+# Controls when the action will run
+on:
+  schedule:
+    # Runs every 10 minutes
+    - cron: "*/10 * * * *"
+
+  # Allows the workflow to be manually triggered
+  workflow_dispatch:
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the repository
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        # Checkout the exports branch so changes can be committed directly there
+        ref: testbranch
+
+    # Step 2: Set up Python
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'  # Specify your Python version
+
+    # Step 3: Create and activate virtual environment
+    - name: Set up virtual environment
+      run: |
+        python -m venv venv  # Create a virtual environment in the project directory
+        source venv/bin/activate  # Activate the virtual environment
+        pip install --upgrade pip  # Upgrade pip within the virtual environment
+
+    # Step 4: Install dependencies if any (Optional)
+    - name: Install dependencies
+      run: |
+        source venv/bin/activate  # Ensure the virtual environment is activated
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi  # Install dependencies
+
+    # Step 5: Run the Python script inside venv
+    - name: Run Python script
+      run: |
+        source venv/bin/activate  # Activate the virtual environment
+        python scheduling/main.py  # Run your Python script
+
+    # Step 6: Commit and push changes to the exports branch
+    - name: Commit and push changes
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add .
+        git commit -m "Automated commit from GitHub Action"
+        git push origin exports
