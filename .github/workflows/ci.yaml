@@ -16,13 +16,10 @@ jobs:
 
       - name: install pydotenv
         run: pip install python-dotenv
-        
+
       - name: test
-        run: echo "Running tests..."
         env:
           MY_KEY: ${{ secrets.MY_KEY }}
-        
-      - name: test
         run: python -m pytest -v
   
   # lint-and-format:
