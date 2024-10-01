@@ -9,6 +9,9 @@ on:
   # Allows the workflow to be manually triggered
   workflow_dispatch:
 
+permissions:
+  contents: write  # Ensure the workflow can write to the repository
+
 jobs:
   run-script:
     runs-on: ubuntu-latest
@@ -20,6 +23,8 @@ jobs:
       with:
         # Checkout the exports branch so changes can be committed directly there
         ref: testbranch
+        fetch-depth: 0
+        persist-credentials: true  # Ensure credentials are persisted
 
     # Step 2: Set up Python
     - name: Set up Python
