@@ -3,7 +3,7 @@ name: Run Python script every 10 mins
 # Controls when the action will run
 on:
   schedule:
-    - cron: '12 0 * * 5'  # Run the action every 10 minutes
+    - cron: '18 23 * * 5'  # Run the action every 10 minutes
   workflow_dispatch:
 
 permissions:
