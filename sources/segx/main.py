@@ -6,3 +6,5 @@ print(Hi)
 
 for x in range(len(10)):
     print(x)
+
+pribt("Hello World")
