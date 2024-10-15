@@ -1,27 +1,26 @@
-name: Prefix PR title and update description with JIRA number
+name: Prefix PR title with JIRA number
 
-# Specify permissions
 permissions:
-  pull-requests: write  # Ensure the action has permission to modify PRs
+  pull-requests: write  # Ensure the action has permission to write to the PR
 
 on:
   pull_request:
     types: [opened]
 
 jobs:
-  update_pr_title_and_description:
+  update_pr_title:
     runs-on: ubuntu-latest
     steps:
       - name: Extract branch name
         id: extract_branch
         run: echo "::set-output name=branch_name::${{ github.head_ref }}"
 
-      - name: Extract JIRA number from branch
+      - name: Extract and uppercase JIRA number from branch
         id: extract_jira
         run: |
           # Modify this regex based on your JIRA ticket pattern (e.g., ABC-123)
           branch_name="${{ steps.extract_branch.outputs.branch_name }}"
-          jira_number=$(echo "$branch_name" | grep -oE '[a-z]+-[0-9]+')
+          jira_number=$(echo "$branch_name" | grep -oE '[A-Z]+-[0-9]+' | tr 'a-z' 'A-Z')
 
           if [ -z "$jira_number" ]; then
             echo "No JIRA number found in branch name"
@@ -30,36 +29,20 @@ jobs:
 
           echo "::set-output name=jira_number::$jira_number"
 
-      - name: Update PR title and description with JIRA number
+      - name: Update PR title with JIRA number
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           jira_number="${{ steps.extract_jira.outputs.jira_number }}"
           current_title="${{ github.event.pull_request.title }}"
-          current_body="${{ github.event.pull_request.body }}"
-
-          # Prefix the PR title with the JIRA number
           new_title="$jira_number: $current_title"
 
-          # Check if '## :bulb: Related issues' is present in the description
-          if echo "$current_body" | grep -q "## :bulb: Related issues"; then
-            # Insert JIRA number below the Related issues section
-            new_body=$(echo "$current_body" | sed "/## :bulb: Related issues/{n;s/.*/$jira_number/}")
-          else
-            # If 'Related issues' section doesn't exist, add it at the top
-            new_body="## :bulb: Related issues\n$jira_number\n\n$current_body"
-          fi
-
-          # Properly escape the title and body for JSON
-          new_title_escaped=$(echo "$new_title" | jq -Rr @json)
-          new_body_escaped=$(echo "$new_body" | jq -Rr @json)
-
-          # Update the PR title and body via GitHub API
+          # Update the PR title via GitHub API
           pr_number="${{ github.event.pull_request.number }}"
           repo="${{ github.repository }}"
 
           curl -s -X PATCH \
             -H "Authorization: token $GITHUB_TOKEN" \
-            -H "Accept: application/vnd.github+json" \
+            -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/$repo/pulls/$pr_number \
-            -d "{\"title\": $new_title_escaped, \"body\": $new_body_escaped}"
+            -d "{\"title\":\"$new_title\"}"
