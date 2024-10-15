@@ -50,6 +50,10 @@ jobs:
             new_body="## :bulb: Related issues\n$jira_number\n\n$current_body"
           fi
 
+          # Properly escape the title and body for JSON
+          new_title_escaped=$(echo "$new_title" | jq -Rr @json)
+          new_body_escaped=$(echo "$new_body" | jq -Rr @json)
+
           # Update the PR title and body via GitHub API
           pr_number="${{ github.event.pull_request.number }}"
           repo="${{ github.repository }}"
@@ -58,4 +62,4 @@ jobs:
             -H "Authorization: token $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/$repo/pulls/$pr_number \
-            -d "{\"title\":\"$new_title\", \"body\":\"$new_body\"}"
+            -d "{\"title\": $new_title_escaped, \"body\": $new_body_escaped}"
