@@ -21,7 +21,7 @@ jobs:
         run: |
           # Modify this regex based on your JIRA ticket pattern (e.g., ABC-123)
           branch_name="${{ steps.extract_branch.outputs.branch_name }}"
-          jira_number=$(echo "$branch_name" | grep -oE '[A-Z]+-[0-9]+')
+          jira_number=$(echo "$branch_name" | grep -oE '[a-z]+-[0-9]+')
 
           if [ -z "$jira_number" ]; then
             echo "No JIRA number found in branch name"
