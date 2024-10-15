@@ -1,21 +1,45 @@
-name: Prepend Branch Info to PR Title
+name: Prefix PR title with JIRA number
 
 on:
   pull_request:
     types: [opened]
 
 jobs:
-  update-pr-title:
+  update_pr_title:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Check out the repository
-      uses: actions/checkout@v3
+      - name: Extract branch name
+        id: extract_branch
+        run: echo "::set-output name=branch_name::${{ github.head_ref }}"
 
-    - name: Enforce Jira Issue Key in Pull Request Title
-      uses: ryanvade/enforce-pr-title-style-action@v2.1.2
-      with:
-        projectKeys: |
-            'kirk'
-            'pl'
-            'chore'
+      - name: Extract JIRA number from branch
+        id: extract_jira
+        run: |
+          # Modify this regex based on your JIRA ticket pattern (e.g., ABC-123)
+          branch_name="${{ steps.extract_branch.outputs.branch_name }}"
+          jira_number=$(echo "$branch_name" | grep -oE '[a-z]+-[0-9]+')
+
+          if [ -z "$jira_number" ]; then
+            echo "No JIRA number found in branch name"
+            exit 1
+          fi
+
+          echo "::set-output name=jira_number::$jira_number"
+
+      - name: Update PR title with JIRA number
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          jira_number="${{ steps.extract_jira.outputs.jira_number }}"
+          current_title="${{ github.event.pull_request.title }}"
+          new_title="$jira_number: $current_title"
+
+          # Update the PR title via GitHub API
+          pr_number="${{ github.event.pull_request.number }}"
+          repo="${{ github.repository }}"
+
+          curl -s -X PATCH \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/$repo/pulls/$pr_number \
+            -d "{\"title\":\"$new_title\"}"
