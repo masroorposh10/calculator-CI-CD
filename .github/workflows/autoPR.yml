@@ -1,14 +1,15 @@
-name: Prefix PR title with JIRA number
+name: Prefix PR title and update description with JIRA number
 
+# Specify permissions
 permissions:
-  pull-requests: write  # Ensure the action has permission to write to the PR
+  pull-requests: write  # Ensure the action has permission to modify PRs
 
 on:
   pull_request:
     types: [opened]
 
 jobs:
-  update_pr_title:
+  update_pr_title_and_description:
     runs-on: ubuntu-latest
     steps:
       - name: Extract branch name
@@ -20,7 +21,7 @@ jobs:
         run: |
           # Modify this regex based on your JIRA ticket pattern (e.g., ABC-123)
           branch_name="${{ steps.extract_branch.outputs.branch_name }}"
-          jira_number=$(echo "$branch_name" | grep -oE '[a-z]+-[0-9]+')
+          jira_number=$(echo "$branch_name" | grep -oE '[A-Z]+-[0-9]+')
 
           if [ -z "$jira_number" ]; then
             echo "No JIRA number found in branch name"
@@ -29,15 +30,25 @@ jobs:
 
           echo "::set-output name=jira_number::$jira_number"
 
-      - name: Update PR title with JIRA number
+      - name: Update PR title and description with JIRA number
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           jira_number="${{ steps.extract_jira.outputs.jira_number }}"
           current_title="${{ github.event.pull_request.title }}"
+          current_body="${{ github.event.pull_request.body }}"
+
+          # Prefix the PR title with the JIRA number
           new_title="$jira_number: $current_title"
 
-          # Update the PR title via GitHub API
+          # Check if the JIRA number is already in the body, if not, add it
+          if [[ "$current_body" != *"$jira_number"* ]]; then
+            new_body="### JIRA Ticket: $jira_number\n\n$current_body"
+          else
+            new_body="$current_body"
+          fi
+
+          # Update the PR title and body via GitHub API
           pr_number="${{ github.event.pull_request.number }}"
           repo="${{ github.repository }}"
 
@@ -45,4 +56,4 @@ jobs:
             -H "Authorization: token $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/$repo/pulls/$pr_number \
-            -d "{\"title\":\"$new_title\"}"
+            -d "{\"title\":\"$new_title\", \"body\":\"$new_body\"}"
