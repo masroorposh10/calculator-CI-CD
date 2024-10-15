@@ -41,26 +41,21 @@ jobs:
           # Prefix the PR title with the JIRA number
           new_title="$jira_number: $current_title"
 
-          # Check if the "Related issues" section exists in the body
-          if [[ "$current_body" == *"## :bulb: Related issues"* ]]; then
-            # If the section exists, append the JIRA number to it
-            new_body=$(echo "$current_body" | sed "s|## :bulb: Related issues|## :bulb: Related issues\n\n- $jira_number|")
+          # Check if '## :bulb: Related issues' is present in the description
+          if echo "$current_body" | grep -q "## :bulb: Related issues"; then
+            # Insert JIRA number below the Related issues section
+            new_body=$(echo "$current_body" | sed "/## :bulb: Related issues/{n;s/.*/$jira_number/}")
           else
-            # If the section doesn't exist, create it and add the JIRA number
-            new_body="$current_body\n\n## :bulb: Related issues\n\n- $jira_number"
+            # If 'Related issues' section doesn't exist, add it at the top
+            new_body="## :bulb: Related issues\n$jira_number\n\n$current_body"
           fi
-
-          # Escape newlines and special characters in title and body for JSON compatibility
-          escaped_title=$(echo "$new_title" | jq -R .)
-          escaped_body=$(echo "$new_body" | jq -R .)
 
           # Update the PR title and body via GitHub API
           pr_number="${{ github.event.pull_request.number }}"
           repo="${{ github.repository }}"
 
-          # Use escaped_title and escaped_body directly without additional quotes
           curl -s -X PATCH \
             -H "Authorization: token $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/$repo/pulls/$pr_number \
-            -d "{\"title\":$escaped_title, \"body\":$escaped_body}"
+            -d "{\"title\":\"$new_title\", \"body\":\"$new_body\"}"
