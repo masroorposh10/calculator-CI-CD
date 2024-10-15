@@ -58,6 +58,7 @@ jobs:
           pr_number="${{ github.event.pull_request.number }}"
           repo="${{ github.repository }}"
 
+          # Use escaped_title and escaped_body directly without additional quotes
           curl -s -X PATCH \
             -H "Authorization: token $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
