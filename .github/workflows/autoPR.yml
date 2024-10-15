@@ -1,5 +1,8 @@
 name: Prefix PR title with JIRA number
 
+permissions:
+  pull-requests: write  # Ensure the action has permission to write to the PR
+
 on:
   pull_request:
     types: [opened]
