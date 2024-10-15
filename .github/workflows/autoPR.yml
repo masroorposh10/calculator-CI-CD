@@ -12,32 +12,10 @@ jobs:
     - name: Check out the repository
       uses: actions/checkout@v3
 
-    - name: Extract branch name
-      id: extract_branch
-      run: echo "branch_name=${GITHUB_REF##*/}" >> $GITHUB_ENV
-
-    - name: Prepend branch info to PR title
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        BRANCH_NAME=${{ env.branch_name }}
-
-        # Extract 'kirk-123' from the branch name pattern 'kirk-123-add-something'
-        if [[ $BRANCH_NAME =~ ^([a-z]+-[0-9]+) ]]; then
-          PREFIX=${BASH_REMATCH[1]}
-        else
-          echo "Branch name does not match the expected pattern, skipping."
-          exit 0
-        fi
-
-        # Get the current PR title
-        PR_TITLE=$(gh pr view ${{ github.event.pull_request.number }} --json title --jq .title)
-
-        # Prepend 'kirk-123' to the PR title if not already present
-        if [[ $PR_TITLE != "$PREFIX"* ]]; then
-          NEW_TITLE="$PREFIX - $PR_TITLE"
-          echo "Updating PR title to: $NEW_TITLE"
-          gh pr edit ${{ github.event.pull_request.number }} --title "$NEW_TITLE"
-        else
-          echo "Prefix already present in the PR title, no update needed."
-        fi
+    - name: Enforce Jira Issue Key in Pull Request Title
+      uses: ryanvade/enforce-pr-title-style-action@v2.1.2
+      with:
+        projectKeys: |
+            'kirk'
+            'pl'
+            'chore'
