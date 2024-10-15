@@ -19,8 +19,9 @@ jobs:
       - name: Extract JIRA number from branch
         id: extract_jira
         run: |
+          # Modify this regex based on your JIRA ticket pattern (e.g., ABC-123)
           branch_name="${{ steps.extract_branch.outputs.branch_name }}"
-          jira_number=$(echo "$branch_name" | grep -oE '[a-z]+-[0-9]+')
+          jira_number=$(echo "$branch_name" | grep -oE '[A-Z]+-[0-9]+')
 
           if [ -z "$jira_number" ]; then
             echo "No JIRA number found in branch name"
@@ -40,11 +41,13 @@ jobs:
           # Prefix the PR title with the JIRA number
           new_title="$jira_number: $current_title"
 
-          # Check if the JIRA number is already in the body, if not, add it
-          if [[ "$current_body" != *"$jira_number"* ]]; then
-            new_body="### JIRA Ticket: $jira_number\n\n$current_body"
+          # Check if the "Related issues" section exists in the body
+          if [[ "$current_body" == *"## :bulb: Related issues"* ]]; then
+            # If the section exists, append the JIRA number to it
+            new_body=$(echo "$current_body" | sed "s|## :bulb: Related issues|## :bulb: Related issues\n\n- $jira_number|")
           else
-            new_body="$current_body"
+            # If the section doesn't exist, create it and add the JIRA number
+            new_body="$current_body\n\n## :bulb: Related issues\n\n- $jira_number"
           fi
 
           # Update the PR title and body via GitHub API
