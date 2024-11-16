@@ -3,7 +3,7 @@ on:
   pull_request:
     types:
       - opened
-      - synchronize
+      - ready_for_review
     paths:
       - 'sources/segx/**'
 
@@ -23,3 +23,4 @@ jobs:
           AZURE_OPENAI_API_ENDPOINT: ${{secrets.AZURE_OPENAI_API_ENDPOINT}}
           AZURE_OPENAI_API_MODEL: "gpt-4-v0613"
           exclude: "yarn.lock,dist/**"
+        continue-on-error: true
