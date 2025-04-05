@@ -27,11 +27,25 @@ jobs:
         run: |
           pytest --maxfail=1 --disable-warnings -q --json=ctrf-report.json
 
-      - name: Post PR Comment
-        run: npx github-actions-ctrf reports/ctrf-report.json --pr-comment
-        if: always()
+      - name: Post test results to PR comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+              const fs = require('fs');
+              const path = 'ctrf-report.json';
+              const json = JSON.parse(fs.readFileSync(path, 'utf8'));
+        
+              const testResults = json.tests
+                .map(test => `${test.name}: ${test.outcome}`)
+                .join('\n');
+        
+              const prComment = `### Test Results\n${testResults}`;
+              const pr = context.issue.number;
+        
+              github.rest.issues.createComment({
+                ...context.repo,
+                issue_number: pr,
+                body: prComment
+              });
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Publish Test Summary Results
-        run: npx github-actions-ctrf ctrf-report.json
