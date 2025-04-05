@@ -1,8 +1,8 @@
 name: Continuous Integration
 
 on:
+  push:
   pull_request:
-
 
 jobs:
   testing:
@@ -12,27 +12,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: pip install pytest
 
-      - name: Run tests and capture summary
-        id: run-tests
+      - name: Run tests and save output
         run: |
           mkdir -p test-results
-          # Run pytest and save full output
-          pytest -v --tb=short | tee test-results/output.log
-          # Extract the summary line (last line like: "== 3 passed, 1 failed ==")
-          tail -n 10 test-results/output.log | grep -Eo '=+.+ in .+s =+' > test-results/summary.txt
-          SUMMARY=$(cat test-results/summary.txt)
-          echo "summary=$SUMMARY" >> $GITHUB_OUTPUT
+          pytest -v | tee test-results/output.log
+          tail -n 10 test-results/output.log > test-summary.txt
 
-      - name: Comment test summary on PR
-        uses: peter-evans/create-or-update-comment@v4
+      - name: Add test summary to GitHub UI
+        run: |
+          echo "### 🧪 Test Summary" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat test-summary.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload full test log
+        uses: actions/upload-artifact@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            🧪 **Test Summary**
-            ```
-            ${{ steps.run-tests.outputs.summary }}
-            ```
+          name: test-log
+          path: test-results/output.log
