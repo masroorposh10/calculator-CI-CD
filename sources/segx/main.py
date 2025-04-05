@@ -14,3 +14,4 @@ if os.getenv("ENV") == "value_for_the_key":
 else:
     write_file("ENV not correct")
 print("Hello World")
+print("Hello World")
