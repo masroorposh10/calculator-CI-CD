@@ -35,6 +35,11 @@ jobs:
               const path = 'ctrf-report.json';
               const json = JSON.parse(fs.readFileSync(path, 'utf8'));
         
+              if (!json.tests) {
+                console.error('No tests found in the report.');
+                return;
+              }
+        
               const testResults = json.tests
                 .map(test => `${test.name}: ${test.outcome}`)
                 .join('\n');
@@ -49,3 +54,4 @@ jobs:
               });
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
