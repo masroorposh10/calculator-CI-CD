@@ -1,19 +1,44 @@
 name: Continuous Integration
 
-on: 
-- push
+on:
+  pull_request:
+    
 
 jobs:
   testing:
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: install dependencies
+      - name: Install dependencies
         run: pip install pytest
 
-      - name: test
-        run: python -m pytest -v
-  
+      - name: Run tests and capture summary
+        id: run-tests
+        run: |
+          mkdir -p test-results
+          # Run pytest and save full output
+          pytest -v --tb=short | tee test-results/output.log
+          # Extract the summary line (last line like: "== 3 passed, 1 failed ==")
+          tail -n 10 test-results/output.log | grep -Eo '=+.+ in .+s =+' > test-results/summary.txt
+          SUMMARY=$(cat test-results/summary.txt)
+          echo "summary=$SUMMARY" >> $GITHUB_OUTPUT
+
+      - name: Comment test summary on PR
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            🧪 **Test Summary**
+            ```
+            ${{ steps.run-tests.outputs.summary }}
+            ```
+
+      - name: Upload full test output (optional)
+        uses: actions/upload-artifact@v3
+        with:
+          name: full-test-log
+          path: test-results/output.log
