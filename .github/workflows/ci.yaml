@@ -26,14 +26,15 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const fs = require('fs');
-            const summary = fs.readFileSync('test-summary.txt', 'utf8');
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `🧪 **Test Summary**\n\`\`\`\n${summary}\n\`\`\``
-            });
+              const fs = require('fs');
+              const summary = fs.readFileSync('test-summary.txt', 'utf8');
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `🧪 **Test Summary**\n\`\`\`\n${summary}\n\`\`\``
+              });
+  
 
       - name: Upload full test log as artifact
         uses: actions/upload-artifact@v4
