@@ -36,7 +36,7 @@ jobs:
         uses: n-ryu/test-reporter@v0.0.2
         with:
           name: Test Results
-          reporter: junit
+          reporter: junit-xml
           path: report.xml  # The path to your JUnit XML report
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
