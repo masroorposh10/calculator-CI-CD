@@ -14,3 +14,12 @@ if os.getenv("ENV") == "value_for_the_key":
 else:
     write_file("ENV not correct")
 print("Hello World")
+for i in range(len(10)):
+    print(i)
+
+print(Hi)
+
+for x in range(len(10)):
+    print(x)
+
+pribt("Hello World")
