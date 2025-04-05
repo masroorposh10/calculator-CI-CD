@@ -2,7 +2,7 @@ name: Continuous Integration
 
 on:
   pull_request:
-    
+
 
 jobs:
   testing:
@@ -36,9 +36,3 @@ jobs:
             ```
             ${{ steps.run-tests.outputs.summary }}
             ```
-
-      - name: Upload full test output (optional)
-        uses: actions/upload-artifact@v3
-        with:
-          name: full-test-log
-          path: test-results/output.log
