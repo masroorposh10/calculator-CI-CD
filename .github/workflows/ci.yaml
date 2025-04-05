@@ -14,7 +14,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step to set up Python (if you are using Python for tests)
+      # Step to set up Python (use your desired version)
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -26,17 +26,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Run tests and generate a JUnit XML report
+      # Run pytest and generate a JUnit XML report
       - name: Run tests
         run: |
           pytest --maxfail=1 --disable-warnings -q --junitxml=report.xml
 
-      # Use n-ryu/test-reporter to post the test results to the PR comment
+      # Post the test results to the PR comment
       - name: Post Test Results to PR
         uses: n-ryu/test-reporter@v0.0.2
         with:
-          name: Test Results
-          reporter: jest-junit
-          path: report.xml  # The path to your JUnit XML report
+          name: Test Results  # Optional: Name of the report section
+          path: report.xml   # Path to your JUnit XML report
+          reporter: java-junit  # Use the java-junit reporter format
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
