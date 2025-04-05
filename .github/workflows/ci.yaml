@@ -28,7 +28,7 @@ jobs:
           pytest --maxfail=1 --disable-warnings -q --json=ctrf-report.json
 
       - name: Post PR Comment
-        run: npx github-actions-ctrf ctrf-report.json --pr-comment
+        run: npx github-actions-ctrf reports/ctrf-report.json --pr-comment
         if: always()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
