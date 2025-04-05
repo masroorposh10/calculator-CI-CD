@@ -10,7 +10,7 @@ def write_file(data):
 
 
 if os.getenv("ENV") == "value_for_the_key":
-    write_file("ENV is correct")
+    write_file("ENV is fully correct")
 else:
-    write_file("ENV not correct")
+    write_file("ENV not fully correct")
 print("Hello World")
