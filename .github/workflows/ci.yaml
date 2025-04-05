@@ -1,43 +1,37 @@
-name: Continuous Integration
+name: Run Tests and Report Results
 
 on:
   pull_request:
-  push:
+    branches:
+      - main
 
 jobs:
-  testing:
+  test:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
 
       - name: Install dependencies
-        run: pip install pytest
-
-      - name: Run tests and save output
         run: |
-          mkdir -p test-results
-          pytest -v | tee test-results/output.log
-          tail -n 10 test-results/output.log > test-summary.txt
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Post test summary as comment on PR (same repo only)
-        if: github.event.pull_request.head.repo.full_name == github.repository  # Only for PRs from the same repository
-        uses: actions/github-script@v7
-        with:
-          script: |
-              const fs = require('fs');
-              const summary = fs.readFileSync('test-summary.txt', 'utf8');
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: `🧪 **Test Summary**\n\`\`\`\n${summary}\n\`\`\``
-              });
-  
+      - name: Run tests
+        run: |
+          pytest --maxfail=1 --disable-warnings -q --json=ctrf-report.json
 
-      - name: Upload full test log as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-log
-          path: test-results/output.log
+      - name: Post PR Comment
+        run: npx github-actions-ctrf ctrf-report.json --pr-comment
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish Test Summary Results
+        run: npx github-actions-ctrf ctrf-report.json
