@@ -1,4 +1,4 @@
-name: Run Tests and Report Results
+name: Run Tests and Post Results
 
 on:
   pull_request:
@@ -10,48 +10,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step to check out the code from your repo
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # Step to set up Python (if you are using Python for tests)
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.x'
 
+      # Install dependencies (including pytest)
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # Run tests and generate a JUnit XML report
       - name: Run tests
         run: |
-          pytest --maxfail=1 --disable-warnings -q --json=ctrf-report.json
+          pytest --maxfail=1 --disable-warnings -q --junitxml=report.xml
 
-      - name: Post test results to PR comment
-        uses: actions/github-script@v6
+      # Use n-ryu/test-reporter to post the test results to the PR comment
+      - name: Post Test Results to PR
+        uses: n-ryu/test-reporter@v0.0.2
         with:
-          script: |
-              const fs = require('fs');
-              const path = 'ctrf-report.json';
-              const json = JSON.parse(fs.readFileSync(path, 'utf8'));
-        
-              if (!json.tests) {
-                console.error('No tests found in the report.');
-                return;
-              }
-        
-              const testResults = json.tests
-                .map(test => `${test.name}: ${test.outcome}`)
-                .join('\n');
-        
-              const prComment = `### Test Results\n${testResults}`;
-              const pr = context.issue.number;
-        
-              github.rest.issues.createComment({
-                ...context.repo,
-                issue_number: pr,
-                body: prComment
-              });
+          name: Test Results
+          reporter: junit
+          path: report.xml  # The path to your JUnit XML report
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
